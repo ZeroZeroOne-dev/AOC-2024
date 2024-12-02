@@ -1,63 +1,36 @@
 ﻿var levels = File.ReadAllLines("Input/data.txt").Select(strReport => strReport.Split(' ').Select(level => int.Parse(level)).ToArray());
 
-var safeLevels = levels.Where(IsSave);
+var total = levels.Count();
+var unSafeLevels = levels.Where(IsNotSave);
+var unsafeCount = unSafeLevels.Count();
+var saveCount = total - unsafeCount;
 
-var safe = 0;
-// foreach (var level in levels)
-// {
-//     var increase = 0;
-//     var decrease = 0;
+var oneStepFromSaveLevels = unSafeLevels.Where(IsOneStepFromSave);
+var totalSave = saveCount + oneStepFromSaveLevels.Count();
 
-//     for (int i = 0; i < level.Length; i++)
-//     {
-//         if (i == level.Length - 1)
-//         {
-//             safe++;
-//             continue;
-//         }
+Console.WriteLine($"Safe: {totalSave}");
 
-//         var difference = level[i] - level[i + 1];
-//         if (difference < 0)
-//         {
-//             increase++;
-//         }
-//         else if (difference > 0)
-//         {
-//             decrease++;
-//         }
-//         else
-//         {
-//             break;
-//         }
-
-//         if (increase != 0 && decrease != 0)
-//         {
-//             break;
-//         }
-
-//         var absDifference = Math.Abs(difference);
-//         if (absDifference < 1 || absDifference > 3)
-//         {
-//             break;
-//         }
-//     }
-// }
-
-foreach (var level in levels)
+static bool IsNotSave(int[] level)
 {
-
-}
-
-static bool IsSave(int[] level)
-{
-    var pairs = new List<(int first, int second)>();
+    var diffences = new List<int>();
 
     for (int i = 0; i < level.Length - 1; i++)
     {
-        pairs.Add((level[i], level[i+1]));
+        diffences.Add(level[i + 1] - level[i]);
+    }
+
+    return diffences.Select(Math.Abs).Any(d => d < 1 || d > 3)
+        || (diffences.Any(d => d < 0) && diffences.Any(d => d > 0));
+}
+
+static bool IsOneStepFromSave(int[] level)
+{
+    for (int i = 0; i < level.Length; i++)
+    {
+        var toTest = level[..i].Concat(level[(i + 1)..]).ToArray();
+
+        if (!IsNotSave(toTest)) return true;
     }
 
     return false;
 }
-
-Console.WriteLine($"Safe: {safe}");
