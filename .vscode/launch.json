@@ -1,11 +1,11 @@
 {
     "configurations": [
         {
-            "name": "C#: day-4",
+            "name": "C#: day-5",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}\\4\\day-4.csproj",
-            "launchConfigurationId": "TargetFramework=;day-4"
+            "projectPath": "${workspaceFolder}\\5\\day-5.csproj",
+            "launchConfigurationId": "TargetFramework=;day-5"
         }
     ]
 }
