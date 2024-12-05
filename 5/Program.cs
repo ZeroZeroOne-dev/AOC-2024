@@ -28,7 +28,7 @@ Console.WriteLine($"Correct: {total}");
 
 // part 2
 
-var incorrects = updates.Except(corrects).ToArray();
+var incorrects = updates.Where(u => !isCorrect(u));
 
 var reordered = incorrects.Select(order);
 
@@ -38,20 +38,19 @@ Console.WriteLine($"Reordered: {totalReordered}");
 
 // functions
 
-bool isCorrect(IEnumerable<string> update)
+bool isCorrect(string[] update)
 {
     var passes = true;
-    var updateArr = update.ToArray();
 
-    for (var i = 0; i < updateArr.Length; i++)
+    for (var i = 0; i < update.Length; i++)
     {
-        var page = updateArr[i];
+        var page = update[i];
         if (!ruleMap.TryGetValue(page, out var ruleSet))
         {
             continue;
         }
 
-        var before = updateArr[..i];
+        var before = update[..i];
         if (before.Any(ruleSet.Contains))
         {
             passes = false;
@@ -64,34 +63,32 @@ bool isCorrect(IEnumerable<string> update)
 
 string[] order(string[] update)
 {
-    var remade = new List<string>(update);
 
-    while (!isCorrect(remade))
+    var reoredred = new List<string>();
+
+    for (var i = 0; i < update.Length; i++)
     {
+        var page = update[i];
 
-        for (var i = 0; i < remade.Count; i++)
+        if (!ruleMap.TryGetValue(page, out var ruleSet))
         {
-
-            var page = remade[i];
-            if (!ruleMap.TryGetValue(page, out var ruleSet))
-            {
-                continue;
-            }
-
-            var index = remade.FindIndex(ruleSet.Contains);
-
-            if (index == -1)
-            {
-                continue;
-            }
-
-            remade.RemoveAt(i);
-            remade.Insert(index, page);
+            reoredred.Add(page);
+            continue;
         }
 
+        var firstAfter = reoredred.FirstOrDefault(r => ruleSet.Contains(r));
+
+        if (firstAfter == null)
+        {
+            reoredred.Add(page);
+            continue;
+        }
+
+        var afterIndex = reoredred.IndexOf(firstAfter);
+        reoredred.Insert(afterIndex, page);
     }
 
-    return [.. remade];
+    return [.. reoredred];
 }
 
 
